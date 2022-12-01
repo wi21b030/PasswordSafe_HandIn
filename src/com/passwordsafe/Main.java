@@ -19,12 +19,8 @@ public class Main {
 
     private static final MasterPasswordRepository masterRepository = new MasterPasswordRepository("./master.pw");
     private static PasswordSafeEngine passwordSafeEngine;
-    // initialise publisher
-    private static final PasswordSafeEnginePublisher publisher = new PasswordSafeEnginePublisher();
 
     public static void main(String[] args) throws Exception {
-        // add auditor to subscriber list of publisher
-        publisher.addSubscriber(new Auditor());
         System.out.println("Welcome to Passwordsafe");
 
         boolean abort = false;
@@ -76,20 +72,9 @@ public class Main {
                     } else {
                         System.out.println("Enter name of password");
                         String passwordName = read.next();
-                        System.out.println("Enter old password");
-                        String oldPassword = read.next();
-                        // have to type old password to set new
-                        if(oldPassword.equals(passwordSafeEngine.GetPassword(passwordName))){
-                            // if matches then auditor gets message of correct password entry
-                            System.out.println("Enter new password");
-                            String newPassword = read.next();
-                            passwordSafeEngine.UpdatePassword(new PasswordInfo(newPassword, passwordName));
-                            publisher.send("Password updated!");
-                        }else{
-                            // if it does not match old password then auditor gets message of wrong password entry
-                            publisher.send("Wrong password entered!");
-                            // using publisher to send message to auditor
-                        }
+                        System.out.println("Enter new password");
+                        String newPassword = read.next();
+                        passwordSafeEngine.UpdatePassword(new PasswordInfo(newPassword, passwordName));
                     }
                     break;
                 }

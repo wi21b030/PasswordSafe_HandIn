@@ -1,5 +1,7 @@
 package com.passwordsafe.password;
 import com.passwordsafe.password.cipher.CipherFacility;
+import com.passwordsafe.password.observer.Auditor;
+import com.passwordsafe.password.observer.PasswordSafeEnginePublisher;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -14,11 +16,14 @@ import java.util.stream.Collectors;
 public class PasswordSafeEngine {
     private final CipherFacility cipherFaciility;
     private String path;
+    private final PasswordSafeEnginePublisher publisher;
 
 
     public PasswordSafeEngine(String path, CipherFacility cipherFacility) {
         this.cipherFaciility = cipherFacility;
         this.path = path;
+        this.publisher = new PasswordSafeEnginePublisher();
+        publisher.addSubscriber(new Auditor());
     }
     public String[] GetStoredPasswords() throws Exception {
         File directory = new File(path);
@@ -70,7 +75,9 @@ public class PasswordSafeEngine {
         File storage = this.GetFileFromName(info.getName());
         if (storage.exists()) {
             this.WriteToFile(storage.getPath(), info.getPlain());
+            publisher.send("Password updated!");
         } else {
+            publisher.send("Wrong password entered!");
             throw new Exception("Password with the same name not existing.");
         }
     }
