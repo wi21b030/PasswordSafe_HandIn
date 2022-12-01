@@ -1,11 +1,11 @@
-package com.passwordsafe.password;
+package com.passwordsafe.password.repo;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class MasterPasswordFileRepository implements PasswordRepository {
+public class MasterPasswordFileRepository implements MasterPasswordRepository {
     private String masterPasswordPath;
 
     public MasterPasswordFileRepository(String masterPasswordPath) {

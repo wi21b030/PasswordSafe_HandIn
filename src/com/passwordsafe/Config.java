@@ -1,5 +1,5 @@
 package com.passwordsafe;
 
 public class Config {
-    public static String PW_REPO = "DB";
+    public static String PW_REPO = "FILE";
 }
