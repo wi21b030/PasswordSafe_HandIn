@@ -2,7 +2,7 @@ package com.passwordsafe.password.observer;
 
 import java.util.ArrayList;
 import java.util.List;
-
+// Publisher class which sends the message
 public class PasswordSafeEnginePublisher {
     private final List<Subscriber> subscribers;
 

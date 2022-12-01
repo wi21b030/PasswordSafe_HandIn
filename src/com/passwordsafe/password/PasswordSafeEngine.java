@@ -22,6 +22,8 @@ public class PasswordSafeEngine {
     public PasswordSafeEngine(String path, CipherFacility cipherFacility) {
         this.cipherFaciility = cipherFacility;
         this.path = path;
+        // every time we instantiate the PasswordSafeEngine we automatically create and initialise the Publisher
+        // with a single auditor added to the Subscriber list
         this.publisher = new PasswordSafeEnginePublisher();
         publisher.addSubscriber(new Auditor());
     }
@@ -75,8 +77,10 @@ public class PasswordSafeEngine {
         File storage = this.GetFileFromName(info.getName());
         if (storage.exists()) {
             this.WriteToFile(storage.getPath(), info.getPlain());
+            // every time we update a password correctly the subscribers (for now the auditor) are informed
             publisher.send("Password updated!");
         } else {
+            // every time we update a password incorrectly the subscribers (for now the auditor) are informed
             publisher.send("Wrong password entered!");
             throw new Exception("Password with the same name not existing.");
         }
