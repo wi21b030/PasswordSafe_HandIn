@@ -52,6 +52,8 @@ public class PasswordSafeEngine {
     }
     public void DeletePassword(String passwordName) throws Exception, IOException {
         File storage = this.GetFileFromName(passwordName);
+        // send message to subscribers (or auditor only in this case) to notify when password is being reset
+        publisher.send("Password is being reset!");
         if (!storage.delete()) {
             throw new Exception("Unable to delete password setting under " + storage.getName());
         }
