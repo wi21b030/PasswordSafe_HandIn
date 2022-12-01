@@ -3,7 +3,6 @@ package com.passwordsafe;
 import com.passwordsafe.factory.logger.Log;
 import com.passwordsafe.factory.logger.LoggerFactory;
 import com.passwordsafe.factory.logger.LoggerType;
-import com.passwordsafe.password.repo.MasterPasswordFileRepository;
 import com.passwordsafe.password.PasswordInfo;
 import com.passwordsafe.password.PasswordSafeEngine;
 import com.passwordsafe.password.cipher.CipherFacility;
@@ -18,8 +17,11 @@ import java.util.Scanner;
 public class Main {
     private static final Log log = LoggerFactory.getInstance();
 
+    // instantiating a master password repository, depending on config setting we receive either
+    // database repository or file repository
+    // currently we only have the file repository completely implemented
+    // but this shows how easily now we can adapt and add/change different type of repositories
     private static final MasterPasswordRepository masterRepository;
-
     static {
         try {
             masterRepository = PasswordRepositoryFactory.create();

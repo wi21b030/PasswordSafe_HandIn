@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+// changed the MasterPasswordRepository to MasterPasswordFileRepository
 public class MasterPasswordFileRepository implements MasterPasswordRepository {
     private String masterPasswordPath;
 
@@ -42,6 +43,7 @@ public class MasterPasswordFileRepository implements MasterPasswordRepository {
         try {
             writer = new FileWriter(this.masterPasswordPath);
             writer.write(masterPassword);
+            // added print line to show when master password is saved to file
             System.out.println("Password saved to file");
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
