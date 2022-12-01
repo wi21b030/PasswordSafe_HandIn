@@ -3,21 +3,31 @@ package com.passwordsafe;
 import com.passwordsafe.factory.logger.Log;
 import com.passwordsafe.factory.logger.LoggerFactory;
 import com.passwordsafe.factory.logger.LoggerType;
-import com.passwordsafe.password.MasterPasswordRepository;
+import com.passwordsafe.factory.repo.PasswordRepository;
+import com.passwordsafe.factory.repo.PasswordRepositoryFactory;
+import com.passwordsafe.password.MasterPasswordFileRepository;
 import com.passwordsafe.password.PasswordInfo;
 import com.passwordsafe.password.PasswordSafeEngine;
 import com.passwordsafe.password.cipher.CipherFacility;
-import com.passwordsafe.password.observer.Auditor;
-import com.passwordsafe.password.observer.PasswordSafeEnginePublisher;
 
 import java.io.File;
+import java.net.UnknownServiceException;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
     private static final Log log = LoggerFactory.getInstance();
 
-    private static final MasterPasswordRepository masterRepository = new MasterPasswordRepository("./master.pw");
+    private static final MasterPasswordFileRepository masterRepository = new MasterPasswordFileRepository("./master.pw");
+    private static final PasswordRepository repo;
+    static {
+        try {
+            repo = PasswordRepositoryFactory.create();
+        } catch (UnknownServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static PasswordSafeEngine passwordSafeEngine;
 
     public static void main(String[] args) throws Exception {

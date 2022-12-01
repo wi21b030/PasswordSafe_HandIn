@@ -5,14 +5,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class MasterPasswordRepository{
+public class MasterPasswordFileRepository implements PasswordRepository {
     private String masterPasswordPath;
 
-    public MasterPasswordRepository(String masterPasswordPath) {
+    public MasterPasswordFileRepository(String masterPasswordPath) {
         this.masterPasswordPath = masterPasswordPath;
     }
     public void setMasterPasswordPlain(String masterPassword) throws Exception {
-        this.StoreMasterPasswordToFile(masterPassword);
+        this.StoreMasterPassword(masterPassword);
     }
     public String getMasterPasswordPlain() throws Exception {
         return this.GetMasterPasswordFromFile();
@@ -36,11 +36,13 @@ public class MasterPasswordRepository{
         }
         return buffer == null ? null : new String(buffer);
     }
-    private void StoreMasterPasswordToFile(String masterPassword) throws Exception {
+    @Override
+    public void StoreMasterPassword(String masterPassword) throws Exception {
         FileWriter writer = null;
         try {
             writer = new FileWriter(this.masterPasswordPath);
             writer.write(masterPassword);
+            System.out.println("Password saved to file");
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
         }
