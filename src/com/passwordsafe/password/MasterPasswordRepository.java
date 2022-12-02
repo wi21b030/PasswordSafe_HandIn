@@ -1,19 +1,18 @@
-package com.passwordsafe.password.repo;
+package com.passwordsafe.password;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-// changed the MasterPasswordRepository to MasterPasswordFileRepository
-public class MasterPasswordFileRepository implements MasterPasswordRepository {
+public class MasterPasswordRepository{
     private String masterPasswordPath;
 
-    public MasterPasswordFileRepository(String masterPasswordPath) {
+    public MasterPasswordRepository(String masterPasswordPath) {
         this.masterPasswordPath = masterPasswordPath;
     }
     public void setMasterPasswordPlain(String masterPassword) throws Exception {
-        this.StoreMasterPassword(masterPassword);
+        this.StoreMasterPasswordToFile(masterPassword);
     }
     public String getMasterPasswordPlain() throws Exception {
         return this.GetMasterPasswordFromFile();
@@ -37,14 +36,11 @@ public class MasterPasswordFileRepository implements MasterPasswordRepository {
         }
         return buffer == null ? null : new String(buffer);
     }
-    @Override
-    public void StoreMasterPassword(String masterPassword) throws Exception {
+    private void StoreMasterPasswordToFile(String masterPassword) throws Exception {
         FileWriter writer = null;
         try {
             writer = new FileWriter(this.masterPasswordPath);
             writer.write(masterPassword);
-            // added print line to show when master password is saved to file
-            System.out.println("Password saved to file");
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
         }

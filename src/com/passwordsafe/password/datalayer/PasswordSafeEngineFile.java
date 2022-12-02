@@ -1,4 +1,5 @@
-package com.passwordsafe.password;
+package com.passwordsafe.password.datalayer;
+import com.passwordsafe.password.PasswordInfo;
 import com.passwordsafe.password.cipher.CipherFacility;
 import com.passwordsafe.password.observer.Auditor;
 import com.passwordsafe.password.observer.PasswordSafeEnginePublisher;
@@ -13,13 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PasswordSafeEngine {
+public class PasswordSafeEngineFile implements DataAccess{
     private final CipherFacility cipherFaciility;
     private String path;
     private final PasswordSafeEnginePublisher publisher;
 
 
-    public PasswordSafeEngine(String path, CipherFacility cipherFacility) {
+    public PasswordSafeEngineFile(String path, CipherFacility cipherFacility) {
         this.cipherFaciility = cipherFacility;
         this.path = path;
         // every time we instantiate the PasswordSafeEngine we automatically create and initialise the Publisher
