@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PasswordSafeEngineFile implements DataAccess{
-    private final CipherFacility cipherFaciility;
+    private final CipherFacility cipherFacility;
     private String path;
     private final PasswordSafeEnginePublisher publisher;
 
 
     public PasswordSafeEngineFile(String path, CipherFacility cipherFacility) {
-        this.cipherFaciility = cipherFacility;
+        this.cipherFacility = cipherFacility;
         this.path = path;
         // every time we instantiate the PasswordSafeEngine we automatically create and initialise the Publisher
         // with a single auditor added to the Subscriber list
@@ -73,7 +73,7 @@ public class PasswordSafeEngineFile implements DataAccess{
                 if (reader != null) { try { reader.close(); } catch (IOException ex) { } };
             }
         }
-        return this.cipherFaciility.Decrypt(new String(buffer));
+        return this.cipherFacility.Decrypt(new String(buffer));
     }
 
     public void UpdatePassword(PasswordInfo info) throws Exception {
@@ -92,7 +92,7 @@ public class PasswordSafeEngineFile implements DataAccess{
         FileWriter writer = null;
         try {
             writer = new FileWriter(filename);
-            String crypted = this.cipherFaciility.Encrypt(password);
+            String crypted = this.cipherFacility.Encrypt(password);
             writer.write(crypted);
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}

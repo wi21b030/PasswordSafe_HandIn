@@ -5,10 +5,13 @@ import com.passwordsafe.factory.logger.LoggerFactory;
 import com.passwordsafe.factory.logger.LoggerType;
 import com.passwordsafe.password.MasterPasswordRepository;
 import com.passwordsafe.password.PasswordInfo;
+import com.passwordsafe.password.datalayer.DataAccess;
+import com.passwordsafe.password.datalayer.DataAccessFactory;
 import com.passwordsafe.password.datalayer.PasswordSafeEngineFile;
 import com.passwordsafe.password.cipher.CipherFacility;
 
 import java.io.File;
+import java.net.UnknownServiceException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -17,7 +20,7 @@ public class Main {
 
     private static MasterPasswordRepository masterRepository = new MasterPasswordRepository("./master.pw");
 
-    private static PasswordSafeEngineFile passwordSafeEngineFile;
+    private static DataAccess passwordSafeEngine;
 
     public static void main(String[] args) throws Exception {
         System.out.println("Welcome to Passwordsafe");
@@ -39,7 +42,7 @@ public class Main {
                     String masterPw = read.next();
                     locked = !masterRepository.MasterPasswordIsEqualTo(masterPw);
                     if (!locked) {
-                        passwordSafeEngineFile = new PasswordSafeEngineFile("./passwords.pw", CipherFacility.create(masterPw));
+                        DataAccess passwordSafeEngine = DataAccessFactory.create(masterPw);
                         System.out.println("unlocked");
                     } else {
                         System.out.println("master password did not match ! Failed to unlock.");
@@ -50,7 +53,7 @@ public class Main {
                     if (locked) {
                         System.out.println("Please unlock first by entering the master password.");
                     } else {
-                        Arrays.stream(passwordSafeEngineFile.GetStoredPasswords()).forEach(pw -> System.out.println(pw));
+                        Arrays.stream(passwordSafeEngine.GetStoredPasswords()).forEach(pw -> System.out.println(pw));
                     }
                     break;
                 }
@@ -60,7 +63,7 @@ public class Main {
                     } else {
                         System.out.println("Enter password name");
                         String passwordName = read.next();
-                        System.out.println(passwordSafeEngineFile.GetPassword(passwordName));
+                        System.out.println(passwordSafeEngine.GetPassword(passwordName));
                     }
                     break;
                 }
@@ -73,7 +76,7 @@ public class Main {
                         String passwordName = read.next();
                         System.out.println("Enter new password");
                         String newPassword = read.next();
-                        passwordSafeEngineFile.UpdatePassword(new PasswordInfo(newPassword, passwordName));
+                        passwordSafeEngine.UpdatePassword(new PasswordInfo(newPassword, passwordName));
                     }
                     break;
                 }
@@ -85,7 +88,7 @@ public class Main {
                         String passwordName = read.next();
                         System.out.println("Enter password");
                         String password = read.next();
-                        passwordSafeEngineFile.AddNewPassword(new PasswordInfo(password, passwordName));
+                        passwordSafeEngine.AddNewPassword(new PasswordInfo(password, passwordName));
                     }
                     break;
                 }
@@ -95,13 +98,13 @@ public class Main {
                     } else {
                         System.out.println("Enter password name");
                         String passwordName = read.next();
-                        passwordSafeEngineFile.DeletePassword(passwordName);
+                        passwordSafeEngine.DeletePassword(passwordName);
                     }
                     break;
                 }
                 case 7: {
                     locked = true;
-                    passwordSafeEngineFile = null;
+                    passwordSafeEngine = null;
                     System.out.println("Enter new master password ! (Warning you will loose all already stored passwords)");
                     String masterPw = read.next();
                     System.out.println("Enter new master password again !");
