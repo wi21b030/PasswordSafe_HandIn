@@ -25,4 +25,8 @@ public class MasterPasswordRepository{
     private void StoreMasterPasswordToFile(String masterPassword) throws Exception {
         this.dataAccess.storeMasterPasswordToFile(masterPassword);
     }
+
+    public void deleteAll(){
+        this.dataAccess.deleteAllPasswords();
+    }
 }

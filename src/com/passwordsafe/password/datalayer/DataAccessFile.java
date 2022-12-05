@@ -46,7 +46,7 @@ public class DataAccessFile implements DataAccess {
         if (!directory.isDirectory() && !directory.mkdir()) {
             throw new Exception("Unable to create directory");
         }
-        File storage = (this.GetFileFromName(passwordName));
+        File storage = (this.getFileFromName(passwordName));
         if (storage.createNewFile()) {
             this.WriteToFile(storage.getPath(),cypher);
         } else {
@@ -56,7 +56,7 @@ public class DataAccessFile implements DataAccess {
 
     @Override
     public void deletePassword(String passwordName) throws Exception {
-        File storage = this.GetFileFromName(passwordName);
+        File storage = this.getFileFromName(passwordName);
         // send message to subscribers (or auditor only in this case) to notify when password is being reset
         publisher.send("Password is being reset!");
         if (!storage.delete()) {
@@ -66,7 +66,7 @@ public class DataAccessFile implements DataAccess {
 
     @Override
     public char[] getPassword(String passwordName, PasswordSafeEngine passwordSafeEngine) throws IOException {
-        File passwordFile = this.GetFileFromName(passwordName);
+        File passwordFile = this.getFileFromName(passwordName);
         char[] buffer = null;
         if (passwordFile.exists()) {
             FileReader reader = null;
@@ -88,7 +88,7 @@ public class DataAccessFile implements DataAccess {
 
     @Override
     public void updatePassword(PasswordInfo info) throws Exception {
-        File storage = this.GetFileFromName(info.getName());
+        File storage = this.getFileFromName(info.getName());
         if (storage.exists()) {
             this.WriteToFile(storage.getPath(), info.getPlain());
             // every time we update a password correctly the subscribers (for now the auditor) are informed
@@ -110,7 +110,7 @@ public class DataAccessFile implements DataAccess {
         }
     }
 
-    private File GetFileFromName(String name) {
+    private File getFileFromName(String name) {
         return new File( path + "/" + name + ".pw");
     }
 
@@ -143,5 +143,17 @@ public class DataAccessFile implements DataAccess {
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
         }
+    }
+
+    @Override
+    public void deleteAllPasswords() {
+        File oldPasswords = new File(path);
+        if (oldPasswords.isDirectory()) {
+            String[] children = oldPasswords.list();
+            for (int i = 0; i < children.length; i++) {
+                (new File(oldPasswords, children[i])).delete();
+            }
+        }
+        oldPasswords.delete();
     }
 }

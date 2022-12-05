@@ -18,4 +18,6 @@ public interface DataAccess {
     void updatePassword(PasswordInfo info) throws Exception;
     String getMasterPasswordFromFile() throws Exception;
     void storeMasterPasswordToFile(String masterPassword) throws Exception;
+
+    void deleteAllPasswords();
 }

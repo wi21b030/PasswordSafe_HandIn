@@ -118,17 +118,8 @@ public class Main {
                     // Once the second entry is correct, we make use of the logger to send a message to the console
                     //log.info(LoggerType.INFO, "New master password has been set !");
                     masterRepository.setMasterPasswordPlain(masterPw);
-                    // urgent hotfix delete old passwords after changing the master
-                    File oldPasswords = new File("./passwords.pw");
-                    if (oldPasswords.isDirectory())
-                    {
-                        String[] children = oldPasswords.list();
-                        for (int i=0; i<children.length; i++) {
-                            (new File(oldPasswords, children[i])).delete();
-                        }
-                    }
-                    // The directory is now empty or this is a file so delete it
-                    oldPasswords.delete();
+                    // put the hot fix in a method and cleaned up the code
+                    masterRepository.deleteAll();
                     break;
                 }
                 default:
