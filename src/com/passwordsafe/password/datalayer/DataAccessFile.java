@@ -144,9 +144,4 @@ public class DataAccessFile implements DataAccess {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
         }
     }
-
-    @Override
-    public void enteredWrongPassword() {
-        publisher.send("Wrong password entered");
-    }
 }

@@ -48,8 +48,4 @@ public class DataAccessDatabase implements DataAccess{
     public void storeMasterPasswordToFile(String masterPassword) throws Exception {
 
     }
-
-    @Override
-    public void enteredWrongPassword() {
-    }
 }

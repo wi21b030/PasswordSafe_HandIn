@@ -37,8 +37,4 @@ public class PasswordSafeEngine {
     public void UpdatePassword(PasswordInfo info) throws Exception {
         this.dataAccess.updatePassword(info);
     }
-
-    public void secondEntryWrong(String second){
-        this.dataAccess.secondWrong();
-    }
 }

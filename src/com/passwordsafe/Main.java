@@ -111,8 +111,7 @@ public class Main {
                     String second = read.next();
                     // Simple while loop to compare and check if second entry matches first
                     while(!masterPw.equals(second)){
-                        // method for wrong entry of master password while setting new one
-                        dataLayer.enteredWrongPassword();
+                        System.out.println("Second entry does not match first entry!");
                         System.out.println("Enter new master password again !");
                         second = read.next();
                     }
