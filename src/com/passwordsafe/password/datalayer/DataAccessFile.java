@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// concrete implementation of interface methods for file storage of master password and normal passwords
 public class DataAccessFile implements DataAccess {
 
     private final String path;
@@ -138,8 +139,14 @@ public class DataAccessFile implements DataAccess {
         try {
             writer = new FileWriter(masterPath);
             writer.write(masterPassword);
+            publisher.send("New master password has been set");
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
         }
+    }
+
+    @Override
+    public void enteredWrongPassword() {
+        publisher.send("Wrong password entered");
     }
 }

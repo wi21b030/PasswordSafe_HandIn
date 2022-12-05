@@ -10,6 +10,8 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+// both MasterPasswordRepository and PasswordSafeEngine now access concrete methods via reference of
+// the DataAccess interface
 public class PasswordSafeEngine {
     private final DataAccess dataAccess;
     private final CipherFacility cipherFacility;
@@ -34,5 +36,9 @@ public class PasswordSafeEngine {
 
     public void UpdatePassword(PasswordInfo info) throws Exception {
         this.dataAccess.updatePassword(info);
+    }
+
+    public void secondEntryWrong(String second){
+        this.dataAccess.secondWrong();
     }
 }

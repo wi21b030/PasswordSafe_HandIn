@@ -1,8 +1,8 @@
 package com.passwordsafe;
 
-import com.passwordsafe.factory.logger.Log;
-import com.passwordsafe.factory.logger.LoggerFactory;
-import com.passwordsafe.factory.logger.LoggerType;
+//import com.passwordsafe.factory.logger.Log;
+//import com.passwordsafe.factory.logger.LoggerFactory;
+//import com.passwordsafe.factory.logger.LoggerType;
 import com.passwordsafe.password.datalayer.DataAccess;
 import com.passwordsafe.password.datalayer.DataAccessFile;
 import com.passwordsafe.password.logic.MasterPasswordRepository;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    private static final Log log = LoggerFactory.getInstance();
+    //private static final Log log = LoggerFactory.getInstance();
     private static PasswordSafeEngine passwordSafeEngine = null;
 
 
@@ -111,13 +111,13 @@ public class Main {
                     String second = read.next();
                     // Simple while loop to compare and check if second entry matches first
                     while(!masterPw.equals(second)){
-                        System.out.println("Password does not match the first entry !");
-                        log.info(LoggerType.ERROR, "Password incorrect!");
+                        // method for wrong entry of master password while setting new one
+                        dataLayer.enteredWrongPassword();
                         System.out.println("Enter new master password again !");
                         second = read.next();
                     }
                     // Once the second entry is correct, we make use of the logger to send a message to the console
-                    log.info(LoggerType.INFO, "New master password has been set !");
+                    //log.info(LoggerType.INFO, "New master password has been set !");
                     masterRepository.setMasterPasswordPlain(masterPw);
                     // urgent hotfix delete old passwords after changing the master
                     File oldPasswords = new File("./passwords.pw");

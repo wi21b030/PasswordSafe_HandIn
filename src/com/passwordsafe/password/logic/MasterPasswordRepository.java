@@ -2,6 +2,8 @@ package com.passwordsafe.password.logic;
 
 import com.passwordsafe.password.datalayer.DataAccess;
 
+// both MasterPasswordRepository and PasswordSafeEngine now access concrete methods via reference of
+// the DataAccess interface
 public class MasterPasswordRepository{
     private final DataAccess dataAccess;
 

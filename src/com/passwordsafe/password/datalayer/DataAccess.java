@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+// Interface that provides methods for password handling for different data storage systems
 public interface DataAccess {
     String[] getStoredPasswords() throws Exception;
     void addNewPassword(String passwordName, String cypher) throws IOException, Exception;
@@ -17,4 +18,5 @@ public interface DataAccess {
     void updatePassword(PasswordInfo info) throws Exception;
     String getMasterPasswordFromFile() throws Exception;
     void storeMasterPasswordToFile(String masterPassword) throws Exception;
+    void enteredWrongPassword();
 }
