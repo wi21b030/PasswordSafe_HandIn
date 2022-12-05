@@ -1,34 +1,33 @@
 package com.passwordsafe.password.datalayer;
+
 import com.passwordsafe.password.PasswordInfo;
-import com.passwordsafe.password.cipher.CipherFacility;
+import com.passwordsafe.password.logic.PasswordSafeEngine;
 import com.passwordsafe.password.observer.Auditor;
 import com.passwordsafe.password.observer.PasswordSafeEnginePublisher;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.*;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PasswordSafeEngineFile implements DataAccess{
-    private final CipherFacility cipherFacility;
-    private String path;
-    private final PasswordSafeEnginePublisher publisher;
+public class DataAccessFile implements DataAccess {
 
+    private final String path;
+    private final String masterPath;
+    private final PasswordSafeEnginePublisher publisher = new PasswordSafeEnginePublisher();
 
-    public PasswordSafeEngineFile(String path, CipherFacility cipherFacility) {
-        this.cipherFacility = cipherFacility;
+    public DataAccessFile(String path, String masterPath) {
         this.path = path;
-        // every time we instantiate the PasswordSafeEngine we automatically create and initialise the Publisher
-        // with a single auditor added to the Subscriber list
-        this.publisher = new PasswordSafeEnginePublisher();
-        publisher.addSubscriber(new Auditor());
+        this.masterPath = masterPath;
+        this.publisher.addSubscriber(new Auditor());
     }
-    public String[] GetStoredPasswords() throws Exception {
+
+
+    @Override
+    public String[] getStoredPasswords() throws Exception {
         File directory = new File(path);
         if (!directory.isDirectory() && !directory.mkdir()) {
             throw new Exception("Unable to create directory");
@@ -39,19 +38,23 @@ public class PasswordSafeEngineFile implements DataAccess{
                 .map(f -> f.getName().split("\\.")[0])
                 .collect(Collectors.toList()).toArray(new String[0]);
     }
-    public void AddNewPassword(PasswordInfo info) throws IOException, Exception {
+
+    @Override
+    public void addNewPassword(String passwordName, String cypher) throws Exception {
         File directory = new File(path);
         if (!directory.isDirectory() && !directory.mkdir()) {
             throw new Exception("Unable to create directory");
         }
-        File storage = (this.GetFileFromName(info.getName()));
+        File storage = (this.GetFileFromName(passwordName));
         if (storage.createNewFile()) {
-            this.WriteToFile(storage.getPath(), info.getPlain());
+            this.WriteToFile(storage.getPath(),cypher);
         } else {
             throw new Exception("Password with the same name already existing. Please choose another name of update the existing one.");
         }
     }
-    public void DeletePassword(String passwordName) throws Exception, IOException {
+
+    @Override
+    public void deletePassword(String passwordName) throws Exception {
         File storage = this.GetFileFromName(passwordName);
         // send message to subscribers (or auditor only in this case) to notify when password is being reset
         publisher.send("Password is being reset!");
@@ -59,8 +62,61 @@ public class PasswordSafeEngineFile implements DataAccess{
             throw new Exception("Unable to delete password setting under " + storage.getName());
         }
     }
-    public String GetPassword(String passwordName) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+
+    @Override
+    public char[] getPassword(String passwordName, PasswordSafeEngine passwordSafeEngine) throws IOException {
         File passwordFile = this.GetFileFromName(passwordName);
+        char[] buffer = null;
+        if (passwordFile.exists()) {
+            FileReader reader = null;
+            try {
+                buffer = new char[(int) passwordFile.length()];
+                reader = new FileReader(passwordFile);
+                reader.read(buffer);
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
+        }
+        return buffer;
+    }
+
+    @Override
+    public void updatePassword(PasswordInfo info) throws Exception {
+        File storage = this.GetFileFromName(info.getName());
+        if (storage.exists()) {
+            this.WriteToFile(storage.getPath(), info.getPlain());
+            // every time we update a password correctly the subscribers (for now the auditor) are informed
+            publisher.send("Password '" + info.getName() + "' has been updated!");
+        } else {
+            // every time we update a password incorrectly the subscribers (for now the auditor) are informed
+            publisher.send("Wrong password entered!");
+            throw new Exception("Password with the same name not existing.");
+        }
+    }
+
+    private void WriteToFile(String filename, String crypted) throws IOException {
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(filename);
+            writer.write(crypted);
+        } finally {
+            if (writer != null) try { writer.close(); } catch (IOException ignore) {}
+        }
+    }
+
+    private File GetFileFromName(String name) {
+        return new File( path + "/" + name + ".pw");
+    }
+
+
+    @Override
+    public String getMasterPasswordFromFile() throws Exception {
+        File passwordFile = new File(masterPath);
         char[] buffer = null;
         if (passwordFile.exists()) {
             FileReader reader = null;
@@ -70,35 +126,20 @@ public class PasswordSafeEngineFile implements DataAccess{
                 reader.read(buffer);
             }
             finally {
-                if (reader != null) { try { reader.close(); } catch (IOException ex) { } };
+                if (reader != null) { try { reader.close(); } catch (IOException ignored) { } }
             }
         }
-        return this.cipherFacility.Decrypt(new String(buffer));
+        return buffer == null ? null : new String(buffer);
     }
 
-    public void UpdatePassword(PasswordInfo info) throws Exception {
-        File storage = this.GetFileFromName(info.getName());
-        if (storage.exists()) {
-            this.WriteToFile(storage.getPath(), info.getPlain());
-            // every time we update a password correctly the subscribers (for now the auditor) are informed
-            publisher.send("Password updated!");
-        } else {
-            // every time we update a password incorrectly the subscribers (for now the auditor) are informed
-            publisher.send("Wrong password entered!");
-            throw new Exception("Password with the same name not existing.");
-        }
-    }
-    private void WriteToFile(String filename, String password) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    @Override
+    public void storeMasterPasswordToFile(String masterPassword) throws Exception {
         FileWriter writer = null;
         try {
-            writer = new FileWriter(filename);
-            String crypted = this.cipherFacility.Encrypt(password);
-            writer.write(crypted);
+            writer = new FileWriter(masterPath);
+            writer.write(masterPassword);
         } finally {
             if (writer != null) try { writer.close(); } catch (IOException ignore) {}
         }
-    }
-    private File GetFileFromName(String name) {
-        return new File( path + "/" + name + ".pw");
     }
 }

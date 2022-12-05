@@ -14,13 +14,15 @@ import java.util.Arrays;
 public class CipherFacility {
     private final String key;
 
-    // not sure if I should create Factory Clas for CipherFacility
-    public static CipherFacility create(String key){
-        return new CipherFacility(key);
-    }
+
     CipherFacility(String key) {
         this.key = key;
     }
+
+    public static CipherFacility create(String masterPw) {
+        return new CipherFacility(masterPw);
+    }
+
     public String Decrypt(String crypted) throws NoSuchPaddingException, NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(
