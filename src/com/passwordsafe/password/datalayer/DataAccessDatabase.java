@@ -2,6 +2,7 @@ package com.passwordsafe.password.datalayer;
 
 import com.passwordsafe.password.PasswordInfo;
 import com.passwordsafe.password.logic.PasswordSafeEngine;
+import com.passwordsafe.password.observer.PasswordSafeEnginePublisher;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -14,6 +15,8 @@ import java.security.NoSuchAlgorithmException;
 // simple example of implementation with a database storage system, can be expanded/implemented easily
 // without destroying/revamping central logic
 public class DataAccessDatabase implements DataAccess{
+
+    private final PasswordSafeEnginePublisher publisher = new PasswordSafeEnginePublisher();
     @Override
     public String[] getStoredPasswords() throws Exception {
         return new String[0];
@@ -36,7 +39,7 @@ public class DataAccessDatabase implements DataAccess{
 
     @Override
     public void updatePassword(PasswordInfo info) throws Exception {
-
+        publisher.send("Password " + info.getName() + " has been updated");
     }
 
     @Override
